@@ -36,9 +36,9 @@ def movie_post():
 
     title = soup.select_one('meta[property="og:title"]')['content']
     image = soup.select_one('meta[property="og:image"]')['content']
-    des = soup.select_one('meta[property="og:description"]')['content']
+    desc = soup.select_one('meta[property="og:description"]')['content']
 
-    doc = {'title': title, 'image': image, 'description': des, 'star': star_receive, 'comment': comment_receive}
+    doc = {'title': title, 'image': image, 'description': desc, 'star': star_receive, 'comment': comment_receive}
     db.movies.insert_one(doc)
 
     return jsonify({'msg':'POST 저장 완료!'})
