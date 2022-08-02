@@ -1,12 +1,131 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
-    <h1>실종동물 등록하기 페이지</h1>
-{#    실동동물 등록하기 버튼을 누르면 나오는 페이지. 실동된 반려동물의 정보 입력후 등록할 수 있는 등록하기버튼, 뒤로 돌아나오는 취소버튼 필요#}
-    <button onclick="window.location.href='/'">등록완료</button>
-</body>
+
+    <head>
+        <!-- Required meta tags -->
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+        <!-- Bootstrap CSS -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+              integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+              crossorigin="anonymous">
+
+        <!-- Optional JavaScript -->
+        <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+                integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+                crossorigin="anonymous"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+                integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+                crossorigin="anonymous"></script>
+        <meta charset="UTF-8">
+        <title> 컴백홈 - 실종 동물 찾기</title>
+
+        <style>
+            .Dog-image {
+                background-image: url('https://photo.coolenjoy.co.kr/data/editor/1701/Bimg_20170117170034_fcvthfry.jpg');
+                background-size: 100%;
+
+
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+
+
+                width: 1663px;
+                height: 920px;
+
+            }
+            .jumbotron {
+                background-color: black;
+                color: white;
+
+                width: 400px;
+                height: 850px;
+
+                margin-right: 800px;
+            }
+            .btn-danger {
+                margin-left: 300px;
+            }
+            .img-thumbnail {
+                width: 180px;
+                height: 180px;
+
+                margin-left: 70px;
+            }
+            .btn-primary {
+                margin-top: 15px;
+                margin-left: 135px;
+            }
+            .custom-file {
+                margin-top: 15px;
+            }
+        </style>
+    </head>
+    <body>
+    <!--        {# 실동동물 등록하기 버튼을 누르면 나오는 페이지. 실동된 반려동물의 정보 입력후 등록할 수 있는 등록하기버튼, 뒤로 돌아나오는 취소버튼 필요#}-->
+        <div class="display">
+            <div class="Dog-image">
+                <div class="jumbotron">
+                    <div>
+                        <button type="button" class="btn btn-danger">X</button>
+                    </div>
+                    <div>
+                        <p class="lead">실종동물 등록하기</p>
+                    </div>
+                    <div>
+                        <img src="https://media.istockphoto.com/vectors/funny-orange-welsh-corgi-vector-id1138514839?k=20&m=1138514839&s=170667a&w=0&h=0mSkUYGsKm0GDmHlgXmafj5fXxDyT3VlP8-walMjNYc=" class="img-thumbnail" alt="...">
+                    </div>
+                    <div>
+                        <div class="custom-file">
+                            <input type="file" class="custom-file-input" id="customFile">
+                            <label class="custom-file-label" for="customFile">강아지 사진</label>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="name">
+                            <label for="exampleFormControlInput1">강아지 이름</label>
+                            <input type="email" class="form-control" id="exampleFormControlInput1"
+                                   placeholder="이름을 입력하세요.">
+                        </div>
+                    </div>
+                    <div>
+                        <div class="address">
+                            <label for="exampleFormControlInput1">주인 연락처</label>
+                            <input type="email" class="form-control" id="exampleFormControlInput2"
+                                   placeholder="연락처를 입력하세요.">
+                        </div>
+                    </div>
+                    <div>
+                        <div class="date">
+                            <label for="exampleFormControlInput1">실종 날짜</label>
+                            <input type="email" class="form-control" id="exampleFormControlInput3"
+                                   placeholder="날짜를 입력하세요.">
+                        </div>
+                    </div>
+                    <div>
+                        <div class="location">
+                            <label for="exampleFormControlInput1">실종 장소</label>
+                            <input type="email" class="form-control" id="exampleFormControlInput4"
+                                   placeholder="장소를 입력하세요.">
+                        </div>
+                    </div>
+                    <div>
+                        <div class="feature">
+                            <label for="exampleFormControlTextarea1">특징</label>
+                            <textarea class="form-control" id="exampleFormControlTextarea1" rows="3" placeholder="특징을 입력하세요."></textarea>
+                        </div>
+                    </div>
+                    <div>
+                        <button type="button" class="btn btn-primary">등록</button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </body>
 </html>
