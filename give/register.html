@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+          crossorigin="anonymous">
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+            integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+            crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+            integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+            crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bs-custom-file-input/dist/bs-custom-file-input.js"></script>
+    {# 파일업로드 라이브러리#}
+
+    <meta charset="UTF-8">
+    <title> 컴백홈 - 실종 동물 찾기</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&display=swap" rel="stylesheet">
+
+    <style>
+
+        * {
+            font-family: 'Gowun Dodum', sans-serif;
+        }
+
+        .posting-box {
+            width: 500px;
+            margin-top: 20px;
+
+        }
+
+        .wrap {
+            width:100%;
+            height: 100%;
+            margin: auto;
+        }
+
+        .container {
+            {#padding-left: 50px;#}
+            align-items: center;
+            justify-content: center;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .posting-box > .custom-file {
+            margin-bottom: 20px;
+        }
+
+    </style>
+    <script>
+        $(document).ready(function () {
+            bsCustomFileInput.init()
+        })
+
+        function posting() {
+            let ownername = $('#ownername').val()
+            let phone = $('#phone').val()
+            let petname = $('#petname').val()
+            let lostdate = $('#lostdate').val()
+            let losttime = $('#losttime').val()
+            let lostplace = $('#lostplace').val()
+            {#let state = $('#state').val()#}
+            let comment = $('#comment').val()
+
+            let file = $('#file')[0].files[0]
+            let form_data = new FormData()
+            //FormData에 위의 변수들과 file을 실어서 보냄
+
+            form_data.append("file_give", file)
+            form_data.append("ownername_give", ownername)
+            form_data.append("phone_give", phone)
+            form_data.append("petname_give", petname)
+            form_data.append("lostdate_give", lostdate)
+            form_data.append("losttime_give", losttime)
+            form_data.append("lostplace_give", lostplace)
+            form_data.append("comment_give", comment)
+
+            $.ajax({
+                type: "POST",
+                url: "/api/save_petinfo",
+                data: form_data,
+                cache: false,
+                contentType: false,
+                processData: false,
+                success: function (response) {
+                    alert(response["msg"])
+                    window.location.href='/'
+                }
+            });
+        }
+
+    </script>
+</head>
+<body>
+<div class="wrap">
+    <div class="jumbotron jumbotron-fluid">
+        <div class="container">
+            <h1>실종동물 등록하기</h1>
+            <p></p>
+            <div class="posting-box">
+                <div class="custom-file">
+                    <input type="file" class="custom-file-input" id="file">
+                    <label class="custom-file-label" for="file">실종동물 사진 선택하기</label>
+                </div>
+                <div class="form-group">
+                    <input type="email" class="form-control" id="ownername" placeholder="주인 이름">
+                </div>
+                <div class="form-group">
+                    <input type="email" class="form-control" id="phone" placeholder="주인 연락처">
+                </div>
+                <div class="form-group">
+                    <input type="email" class="form-control" id="petname" placeholder="동물 이름">
+                </div>
+                <div class="form-group">
+                    <input type="email" class="form-control" id="lostdate" placeholder="실종 날짜">
+                </div>
+                <div class="form-group">
+                    <input type="email" class="form-control" id="losttime" placeholder="실종 시간대">
+                </div>
+                <div class="form-group">
+                    <input type="email" class="form-control" id="lostplace" placeholder="실종 장소">
+                </div>
+                <div class="form-group">
+                    <textarea class="form-control" id="comment" rows="3"
+                              placeholder="상세 설명"></textarea>
+                </div class=buttons>
+                <button onclick="posting()" type="button" class="btn btn-primary">저장하기</button>
+                <button onclick="window.location.href='/'" type="button" class="btn btn-primary">돌아가기</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
