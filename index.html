@@ -16,6 +16,10 @@
 
     <link href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&display=swap" rel="stylesheet">
 
+    <script src="https://cdn.jsdelivr.net/npm/bs-custom-file-input/dist/bs-custom-file-input.js"></script>
+{#     파일업로드 라이브러리#}
+
+
     <style>
         * {
             font-family: 'Gowun Dodum', sans-serif;
@@ -101,6 +105,7 @@
     </style>
     <script>
         $(document).ready(function () {
+            bsCustomFileInput.init() {#파일 업로드 코드#}
             listing();
         });
 
@@ -112,23 +117,21 @@
                 success: function (response) {
                     let pet_information = response['allinform']
                     for (let i =0; i < pet_information.length; i++) {
-                        let file = rows[i]['file']
-                        let state = rows[i]['state']
-                        let phone = rows[i]['phone']
-                        let lostdate = rows[i]['lostdate']
-                        let losttime = rows[i]['losttime']
-                        let lostplace = rows[i]['lostplace']
+                        let file = pet_information[i]['file']
+                        let phone = pet_information[i]['phone']
+                        let lostdate = pet_information[i]['lostdate']
+                        let losttime = pet_information[i]['losttime']
+                        let lostplace = pet_information[i]['lostplace']
 
 
                         let temp_html = `<div class="col">
                                             <div class="card h-100">
                                                 <img src="../static/${file}" class="card-img-top">
                                                 <div class="card-body">
-                                                    <h5 class="card-title">${state}</h5>
                                                     <p class="card-phone">${phone}</p>
-                                                    <p class="card-mssdate">${lostdate}</p>
-                                                    <p class="card-msstime">${losttime}</p>
-                                                    <p class="card-mssplace">${lostplace}</p>
+                                                    <p class="card-lostdate">${lostdate}</p>
+                                                    <p class="card-losttime">${losttime}</p>
+                                                    <p class="card-lostplace">${lostplace}</p>
                                                </div>
                                             </div>
                                         </div>`
@@ -141,49 +144,51 @@
         }
 
         {# posting()은 실종동물 등록하기 페이지 안에서 등록하기 버튼을 누르면 연결시키는 걸로#}
-        function posting() {
-            let ownername = $('#ownername').val()
-            let phone = $('#phone').val()
-            let petname = $('#petname').val()
-            let petnum = $('#petnum').val()
-            let pettype = $('#pettype').val()
-            let breed = $('#breed').val()
-            let lostdate = $('#lostdate').val()
-            let losttime = $('#losttime').val()
-            let lostplace = $('#lostplace').val()
-            let state = $('#state').val()
-            let comment = $('#comment').val()
+        {#그러면 register페이지에 이 함수를 가져다 붙여야 하나?#}
+        {#function posting() {#}
+        {#    let ownername = $('#ownername').val()#}
+        {#    let phone = $('#phone').val()#}
+        {#    let petname = $('#petname').val()#}
+        {#    let petnum = $('#petnum').val()#}
+        {#    let pettype = $('#pettype').val()#}
+        {#    let breed = $('#breed').val()#}
+        {#    let lostdate = $('#lostdate').val()#}
+        {#    let losttime = $('#losttime').val()#}
+        {#    let lostplace = $('#lostplace').val()#}
+        {#    let state = $('#state').val()#}
+        {#    let comment = $('#comment').val()#}
+        {##}
+        {#    let file = $('#file')[0].files[0]#}
+        {#    let form_data = new FormData()#}
+        {#    //FormData에 위의 변수들과 file을 실어서 보냄#}
+        {##}
+        {#    form_data.append("file_give", file)#}
+        {#    form_data.append("ownername_give", ownername)#}
+        {#    form_data.append("phone_give", phone)#}
+        {#    form_data.append("petname_give", petname)#}
+        {#    form_data.append("petnum_give", petnum)#}
+        {#    form_data.append("pettype_give", pettype)#}
+        {#    form_data.append("breed_give", breed)#}
+        {#    form_data.append("lostdate_give", lostdate)#}
+        {#    form_data.append("losttime_give", losttime)#}
+        {#    form_data.append("lostplace_give", lostplace)#}
+        {#    form_data.append("state_give", state)#}
+        {#    form_data.append("comment_give", comment)#}
+        {##}
+        {#    $.ajax({#}
+        {#        type: "POST",#}
+        {#        url: "/diary",#}
+        {#        data: form_data,#}
+        {#        cache: false,#}
+        {#        contentType: false,#}
+        {#        processData: false,#}
+        {#        success: function (response) {#}
+        {#            alert(response["msg"])#}
+        {#            window.location.reload()#}
+        {#        }#}
+        {#    });#}
+        {# } #}
 
-            let file = $('#file')[0].files[0]
-            let form_data = new FormData()
-            //FormData에 file,,,을 실어서 보냄
-
-            form_data.append("file_give", file)
-            form_data.append("ownername_give", ownername)
-            form_data.append("phone_give", phone)
-            form_data.append("petname_give", petname)
-            form_data.append("petnum_give", petnum)
-            form_data.append("pettype_give", pettype)
-            form_data.append("breed_give", breed)
-            form_data.append("lostdate_give", lostdate)
-            form_data.append("losttime_give", losttime)
-            form_data.append("lostplace_give", lostplace)
-            form_data.append("state_give", state)
-            form_data.append("comment_give", comment)
-
-            $.ajax({
-                type: "POST",
-                url: "/diary",
-                data: form_data,
-                cache: false,
-                contentType: false,
-                processData: false,
-                success: function (response) {
-                    alert(response["msg"])
-                    window.location.reload()
-                }
-            });
-        }
     </script>
 </head>
 
@@ -246,6 +251,20 @@
 <div class="mycards">
     {# 등록한 실동동물 카드가 여기에 붙음#}
     <div class="row row-cols-1 row-cols-md-4 g-4" id="cards-box"></div>
+{#    {% for mypet in mypetinform %}#}
+{#        <div class="col">#}
+{#            <div class="card h-100">#}
+{#                <img src="../static/${file}" class="card-img-top">#}
+{#                <div class="card-body">#}
+{#                    <h5 class="card-title">${state}</h5>#}
+{#                    <p class="card-phone">${phone}</p>#}
+{#                    <p class="card-lostdate">${lostdate}</p>#}
+{#                    <p class="card-losttime">${losttime}</p>#}
+{#                    <p class="card-lostplace">${lostplace}</p>#}
+{#               </div>#}
+{#            </div>#}
+{#        </div>#}
+{#    {% endfor %}#}
 </div>
 </body>
 
