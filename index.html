@@ -12,12 +12,17 @@
             integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
             crossorigin="anonymous"></script>
 
+        <!-- JS -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.js"></script>
+
+
     <title> 컴백홈 - 실종 동물 찾기</title>
 
     <link href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&display=swap" rel="stylesheet">
 
     <script src="https://cdn.jsdelivr.net/npm/bs-custom-file-input/dist/bs-custom-file-input.js"></script>
-{#     파일업로드 라이브러리#}
+    {#     파일업로드 라이브러리#}
 
 
     <style>
@@ -42,11 +47,6 @@
         .mytitle {
             width: 100%;
             height: 400px;
-
-            /*background-image: linear-gradient(0deg, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('https://t1.daumcdn.net/cfile/tistory/132F7C274BCD2CFC3C');*/
-            /*background-position: center;*/
-            /*background-size: cover;*/
-
             color: white;
 
             display: flex;
@@ -83,7 +83,7 @@
             justify-content: center;
         }
 
-        .form-control{
+        .form-control {
             margin-top: 10px;
         }
 
@@ -103,9 +103,10 @@
             max-width: 600px;
         }
     </style>
+
     <script>
         $(document).ready(function () {
-            bsCustomFileInput.init() {#파일 업로드 코드#}
+            bsCustomFileInput.init()
             listing();
         });
 
@@ -116,11 +117,11 @@
                 data: {},
                 success: function (response) {
                     let pet_information = response['allinform']
-                    for (let i =0; i < pet_information.length; i++) {
+                    for (let i = 0; i < pet_information.length; i++) {
                         let file = pet_information[i]['file']
                         let phone = pet_information[i]['phone']
                         let lostdate = pet_information[i]['lostdate']
-                        let losttime = pet_information[i]['losttime']
+                        let petname = pet_information[i]['petname']
                         let lostplace = pet_information[i]['lostplace']
 
 
@@ -128,10 +129,11 @@
                                             <div class="card h-100">
                                                 <img src="../static/${file}" class="card-img-top">
                                                 <div class="card-body">
-                                                    <p class="card-phone">${phone}</p>
-                                                    <p class="card-lostdate">${lostdate}</p>
-                                                    <p class="card-losttime">${losttime}</p>
-                                                    <p class="card-lostplace">${lostplace}</p>
+                                                    <p class="card-petname">이름: ${petname}</p>
+                                                    <p class="card-phone">주인연락처: ${phone}</p>
+                                                    <p class="card-lostdate">실종날짜: ${lostdate}</p>
+                                                    <p class="card-lostplace">실종장소: ${lostplace}</p>
+                                                    <button type="button" class="btn btn-warning" onclick="enter()">상세보기</button>
                                                </div>
                                             </div>
                                         </div>`
@@ -143,51 +145,15 @@
             })
         }
 
-        {# posting()은 실종동물 등록하기 페이지 안에서 등록하기 버튼을 누르면 연결시키는 걸로#}
-        {#그러면 register페이지에 이 함수를 가져다 붙여야 하나?#}
-        {#function posting() {#}
-        {#    let ownername = $('#ownername').val()#}
-        {#    let phone = $('#phone').val()#}
-        {#    let petname = $('#petname').val()#}
-        {#    let petnum = $('#petnum').val()#}
-        {#    let pettype = $('#pettype').val()#}
-        {#    let breed = $('#breed').val()#}
-        {#    let lostdate = $('#lostdate').val()#}
-        {#    let losttime = $('#losttime').val()#}
-        {#    let lostplace = $('#lostplace').val()#}
-        {#    let state = $('#state').val()#}
-        {#    let comment = $('#comment').val()#}
-        {##}
-        {#    let file = $('#file')[0].files[0]#}
-        {#    let form_data = new FormData()#}
-        {#    //FormData에 위의 변수들과 file을 실어서 보냄#}
-        {##}
-        {#    form_data.append("file_give", file)#}
-        {#    form_data.append("ownername_give", ownername)#}
-        {#    form_data.append("phone_give", phone)#}
-        {#    form_data.append("petname_give", petname)#}
-        {#    form_data.append("petnum_give", petnum)#}
-        {#    form_data.append("pettype_give", pettype)#}
-        {#    form_data.append("breed_give", breed)#}
-        {#    form_data.append("lostdate_give", lostdate)#}
-        {#    form_data.append("losttime_give", losttime)#}
-        {#    form_data.append("lostplace_give", lostplace)#}
-        {#    form_data.append("state_give", state)#}
-        {#    form_data.append("comment_give", comment)#}
-        {##}
-        {#    $.ajax({#}
-        {#        type: "POST",#}
-        {#        url: "/diary",#}
-        {#        data: form_data,#}
-        {#        cache: false,#}
-        {#        contentType: false,#}
-        {#        processData: false,#}
-        {#        success: function (response) {#}
-        {#            alert(response["msg"])#}
-        {#            window.location.reload()#}
-        {#        }#}
-        {#    });#}
-        {# } #}
+        function sign_out() {
+            $.removeCookie('mytoken', {path: '/'});
+            alert("로그아웃")
+            window.location.href = "/login"
+        }
+
+        function enter() {
+            window.location.href = "/detail"
+        }
 
     </script>
 </head>
@@ -195,41 +161,19 @@
 <body>
 <div class="myhead">
     <div class="loginandsingup">
-        {# 여기는 로그인 버튼 & 모달팝업#}
         <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-            <!-- Button trigger modal -->
-            <button type="button" class="btn btn-outline-warning" data-bs-toggle="modal" data-bs-target="#exampleModal">
-                로그인
+            <button class="button level-item has-text-centered is-sparta is-outlined" aria-label="logout"
+                    type="button" class="btn btn-outline-warning" onclick="sign_out()">
+                로그아웃
             </button>
-            <!-- Modal -->
-            <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel"
-                 aria-hidden="true">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="exampleModalLabel">로그인</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body">
-                            <p>ID : <input></p>
-                            <p>PW : <input></p>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
-                            <button type="button" class="btn btn-primary">수정하기</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
+
         </div>
     </div>
     <div class="mytitle">
         <h1 class="display-3">컴백홈</h1>
         <p><em>누군가의 소중한 반려동물이 집으로 돌아갈 수 있도록 도와주세요.</em></p>
-        {# 실종동물 등록하기 버튼 누르면 상세페이지로 연결#}
         <button onclick="window.location.href='/register'">실종동물 등록하기</button>
 
-        {# 여기는 동물종류 선택하고 검색기능#}
         <div id="serch" class="input-group mb-3">
             <button class="btn btn-outline-warning dropdown-toggle" type="button" data-bs-toggle="dropdown"
                     aria-expanded="false">동물 종류
@@ -249,22 +193,10 @@
 </div>
 
 <div class="mycards">
-    {#<div class="card-columns" id="card-box"></div> 등록한 실동동물 카드가 여기에 붙음#}
-    <div class="row row-cols-1 row-cols-md-4 g-4 " id="cards-box"></div>
-{#    {% for petinform in petinforms %}#}
-{#        <div class="col">#}
-{#            <div class="card h-100">#}
-{#                <img src="../static/${file}" class="card-img-top">#}
-{#                <div class="card-body">#}
-{#                    <h5 class="card-title">${state}</h5>#}
-{#                    <p class="card-phone">${phone}</p>#}
-{#                    <p class="card-lostdate">${lostdate}</p>#}
-{#                    <p class="card-losttime">${losttime}</p>#}
-{#                    <p class="card-lostplace">${lostplace}</p>#}
-{#               </div>#}
-{#            </div>#}
-{#        </div>#}
-{#    {% endfor %}#}
+    <div class="row row-cols-1 row-cols-md-4 g-4 " id="cards-box">
+
+    </div>
+
 </div>
 </body>
 

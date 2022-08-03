@@ -119,58 +119,51 @@
             alert("로그아웃")
             window.location.href = "/login"
         }
-    </script>
-</head>
 
+        $(document).ready(function () {
+            show();
+        });
 
-<body>
-<div class="myhead">
-    <div class="loginandsingup">
-        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-            <button class="button level-item has-text-centered is-sparta is-outlined" aria-label="logout"
-                    type="button" class="btn btn-outline-warning" onclick="sign_out()">
-                로그아웃
-            </button>
+         function show() {
+            $.ajax({
+                type: 'GET',
+                url: '/detail',
+                data: {},
+                success: function (response) {
 
-        </div>
-    </div>
+                    let rows = response['pets']
 
+                    for (let i=0; i<rows.length; i++)
+                    {
+                        let file = rows[i]['file']
+                        let petname = rows[i]['petname']
+                        let comment = rows[i]['comment']
+                        let lostdate = rows[i]['lostdate']
+                        let lostplace = rows[i]['lostplace']
+                        let phone = rows[i]['phone']
 
-    </nav>
-
-
-    <section class="section">
-        <div class="container-fluid">
-            <div class="columns is-justify-content-center">
-                <div class="column is-two-fifths">
-                    <div class="bulma-card">
-
-
-                        <div class="card" style="width: 50rem;">
-                            <ul class="list-group list-group-flush">
+                        let temp_html = `<ul class="list-group list-group-flush">
                                 <li class="list-group-item">
                                     <div class="card-image">
                                         <figure class="image is-4by3">
-                                            <img src="../static/{{ all_my_pet[0]['file'] }}" , alt="사진을 찾을 수 없음">
+                                            <img src="${file}" , alt="사진을 찾을 수 없음">
                                         </figure>
                                     </div>
                                 </li>
-
-                                <hr>
 
                                 <li class="list-group-item">
                                     <div class="bulma-card-content">
                                         <div class="field">
                                             <label for="name">강아지 이름</label>
-                                            <h6 type="text" id="name">{{ all_my_pet[0]["phone"] }}</h6>
-                                        </div>
+                                            <h6 type="text" id="name">${petname}</h6>
+                                       </div>
                                     </div>
                                 </li>
 
                                 <li class="list-group-item">
                                     <div class="field">
                                         <label for="address">주인 연락처</label>
-                                        <h6 type="text" id="address">{{ all_my_pet[0]["petname"] }}</h6>
+                                        <h6 type="text" id="address">${phone}</h6>
 
                                     </div>
                                 </li>
@@ -178,7 +171,7 @@
                                 <li class="list-group-item">
                                     <div class="field">
                                         <label for="date">실종 날짜</label>
-                                        <h6 type="text" id="date">{{ all_my_pet[0]["lostdate"] }}</h6>
+                                        <h6 type="text" id="date">${lostdate}</h6>
 
                                     </div>
                                 </li>
@@ -186,7 +179,7 @@
                                 <li class="list-group-item">
                                     <div class="field">
                                         <label for="location">실종 장소</label>
-                                        <h6 type="text" id="location">{{ all_my_pet[0]["lostplace"] }}</h6>
+                                        <h6 type="text" id="location">${lostplace}</h6>
 
                                     </div>
                                 </li>
@@ -194,7 +187,85 @@
                                 <li class="list-group-item">
                                     <div class="field">
                                         <label for="feature">특징</label>
-                                        <h6 type="text" id="feature">{{ all_my_pet[0]["comment"] }}</h6>
+                                        <h6 type="text" id="feature">${comment}</h6>
+
+                                    </div>
+                                </li>
+
+                            </ul>`
+
+                        $('#cards-box').append(temp_html)
+                    }
+
+
+                }
+            })
+        }
+
+    </script>
+</head>
+
+
+<body>
+<div class="myhead" id="cards-box">
+    <div class="loginandsingup">
+        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+            <button class="button level-item has-text-centered is-sparta is-outlined" aria-label="logout" type="button" class="btn btn-outline-warning" onclick="sign_out()">로그아웃</button>
+        </div>
+    </div>
+
+    <section class="section" >
+        <div class="container-fluid">
+            <div class="columns is-justify-content-center">
+                <div class="column is-two-fifths">
+                    <div class="bulma-card">
+                        <div class="card" style="width: 50rem;">
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item">
+                                    <div class="card-image">
+                                        <figure class="image is-4by3">
+                                            <img src="../static/" , alt="사진을 찾을 수 없음">
+                                        </figure>
+                                    </div>
+                                </li>
+
+                                <li class="list-group-item">
+                                    <div class="bulma-card-content">
+                                        <div class="field">
+                                            <label for="name">강아지 이름</label>
+                                            <h6 type="text" id="name">가나다</h6>
+                                       </div>
+                                    </div>
+                                </li>
+
+                                <li class="list-group-item">
+                                    <div class="field">
+                                        <label for="address">주인 연락처</label>
+                                        <h6 type="text" id="address"></h6>
+
+                                    </div>
+                                </li>
+
+                                <li class="list-group-item">
+                                    <div class="field">
+                                        <label for="date">실종 날짜</label>
+                                        <h6 type="text" id="date"></h6>
+
+                                    </div>
+                                </li>
+
+                                <li class="list-group-item">
+                                    <div class="field">
+                                        <label for="location">실종 장소</label>
+                                        <h6 type="text" id="location"></h6>
+
+                                    </div>
+                                </li>
+
+                                <li class="list-group-item">
+                                    <div class="field">
+                                        <label for="feature">특징</label>
+                                        <h6 type="text" id="feature"></h6>
 
                                     </div>
                                 </li>

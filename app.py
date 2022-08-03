@@ -1,73 +1,130 @@
-from flask import Flask, render_template, request, jsonify
-app = Flask(__name__)
+from pymongo import MongoClient
+import jwt
+import datetime
+import hashlib
+from flask import Flask, render_template, jsonify, request, redirect, url_for
+from werkzeug.utils import secure_filename
+from datetime import datetime, timedelta
 
-# 여기부터
+from pymongo import MongoClient
 import certifi
 ca = certifi.where()
 
-from pymongo import MongoClient
-client = MongoClient('mongodb+srv://test:sparta@cluster0.o3af5.mongodb.net/Cluster0?retryWrites=true&w=majority', tlsCAFile=ca)
-db = client.dbsparta_week1_project
-# 여기까지는 보안설정 때문에 필요!
+app = Flask(__name__)
+app.config["TEMPLATES_AUTO_RELOAD"] = True
+app.config['UPLOAD_FOLDER'] = "./static/profile_pics"
 
-from datetime import datetime
+SECRET_KEY = 'SPARTA'
+
+client = MongoClient('mongodb+srv://test:sparta@cluster0.1axzddo.mongodb.net/Cluster0?retryWrites=true&w=majority', tlsCAFile=ca)
+db = client.dbsparta_test10
 
 
 @app.route('/')
 def home():
-    petinforms = list(db.find_my_pet.find({}, {"_id": False}))
-    return render_template('index.html', petinforms=petinforms)
+    token_receive = request.cookies.get('mytoken')
+    try:
+        payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
+        user_info = db.users.find_one({"username": payload["id"]})
+        return render_template('index.html', user_info=user_info)
+    except jwt.ExpiredSignatureError:
+        return redirect(url_for("login", msg="로그인 시간이 만료되었습니다."))
+    except jwt.exceptions.DecodeError:
+        return redirect(url_for("login", msg="로그인 정보가 존재하지 않습니다."))
+
+
+@app.route('/login')
+def login():
+    msg = request.args.get("msg")
+    return render_template('login.html', msg=msg)
+
 
 @app.route('/register')
 def register():
     return render_template('register.html')
 
-# 단일객체 렌더링
-# @app.route('/ObjectView/<file>')
-# def view(num):
-#     token_receive = request.cookies.get('mytoken')
-#     try:
-#         # 쿠키에 있는 유저의 정보를 읽어옴
-#         payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
-#
-#         # 읽어온 유저의 id를 통해서 db에서 나머지 정보 찾기
-#         user_info = db.users.find_one({"username": payload["id"]})
-#
-#         # board db에서 해당 num값에 해당하는 dic 찾아오기
-#         post = db.board.find_one({'num': num}, {'_id': False})
-#
-#         # 쿠키에 있는 유저의 아이디와 board에 있는 게시물의 id가 같으면 Ture
-#         status = post["nickname"] == user_info['nickname']
-#
-#         heart = {
-#             "count_heart": db.likes.count_documents({"num": num}),
-#             "heart_by_me": bool(db.likes.find_one({"num": num, "username": user_info["username"]}))
-#         }
-#
-#         return render_template('ObjectView.html', user_info=user_info, post=post, num=num, status=status, heart=heart)
-#
-#     except jwt.ExpiredSignatureError:
-#         return redirect(url_for("login", msg="로그인 시간이 만료되었습니다."))
-#     except jwt.exceptions.DecodeError:
-#         return redirect(url_for("login", msg="로그인 정보가 존재하지 않습니다."))
+
+@app.route('/sign_in', methods=['POST'])
+def sign_in():
+    # 로그인
+    username_receive = request.form['username_give']
+    password_receive = request.form['password_give']
+
+    pw_hash = hashlib.sha256(password_receive.encode('utf-8')).hexdigest()
+    result = db.users.find_one({'username': username_receive, 'password': pw_hash})
+
+    if result is not None:
+        payload = {
+            'id': username_receive,
+            'exp': datetime.utcnow() + timedelta(seconds=60 * 60 * 24)  # 로그인 24시간 유지
+        }
+        token = jwt.encode(payload, SECRET_KEY, algorithm='HS256')  # .decode('utf-8')
+
+        return jsonify({'result': 'success', 'token': token})
+    # 찾지 못하면
+    else:
+        return jsonify({'result': 'fail', 'msg': '아이디/비밀번호가 일치하지 않습니다.'})
+
+
+@app.route('/sign_up/save', methods=['POST'])
+def sign_up():
+    username_receive = request.form['username_give']
+    password_receive = request.form['password_give']
+    password_hash = hashlib.sha256(password_receive.encode('utf-8')).hexdigest()
+    doc = {
+        "username": username_receive,  # 아이디
+        "password": password_hash,  # 비밀번호
+        "profile_name": username_receive,  # 프로필 이름 기본값은 아이디
+        "profile_pic": "",  # 프로필 사진 파일 이름
+        "profile_pic_real": "profile_pics/profile_placeholder.png",  # 프로필 사진 기본 이미지
+        "profile_info": ""  # 프로필 한 마디
+    }
+    db.users.insert_one(doc)
+    return jsonify({'result': 'success'})
+
+
+@app.route('/sign_up/check_dup', methods=['POST'])
+def check_dup():
+    username_receive = request.form['username_give']
+    exists = bool(db.users.find_one({"username": username_receive}))
+    return jsonify({'result': 'success', 'exists': exists})
+
+
+@app.route("/get_posts", methods=['GET'])
+def get_posts():
+    token_receive = request.cookies.get('mytoken')
+    try:
+        payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
+        username_receive = request.args.get("username_give")
+        if username_receive == "":
+            posts = list(db.posts.find({}).sort("date", -1).limit(20))
+        else:
+            posts = list(db.posts.find({"username": username_receive}).sort("date", -1).limit(20))
+        for post in posts:
+            post["_id"] = str(post["_id"])
+            post["count_heart"] = db.likes.count_documents({"post_id": post["_id"], "type": "heart"})
+            post["heart_by_me"] = bool(
+                db.likes.find_one({"post_id": post["_id"], "type": "heart", "username": payload['id']}))
+        return jsonify({"result": "success", "msg": "포스팅을 가져왔습니다.", "posts": posts})
+    except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
+        return redirect(url_for("home"))
 
 
 @app.route("/api/save_petinfo", methods=["POST"])
 def petinfo_post():
-    # 현재 시간을 primary 키 값으로 설정
-    # num = request.form['num_give']
+
+
     # 반려동물 실종정보 등록하기
-    ownername_receive = request.form['ownername_give']
     phone_receive = request.form['phone_give']
     petname_receive = request.form['petname_give']
     lostdate_receive = request.form['lostdate_give']
-    losttime_receive = request.form['losttime_give']
     lostplace_receive = request.form['lostplace_give']
     comment_receive = request.form['comment_give']
 
     file = request.files["file_give"]
     # 확장자명 분리
     extension = file.filename.split('.')[-1]
+
     # 파일명에 시간 추가
     today = datetime.now()
     mytime = today.strftime('%Y-%m-%d-%H-%M-%S')
@@ -77,32 +134,29 @@ def petinfo_post():
     file.save(save_to)
 
     doc = {
+
         'file': f'{filename}.{extension}',
-        'ownername': ownername_receive,
-        'phone' : phone_receive,
-        'petname' : petname_receive,
-        'lostdate' : lostdate_receive,
-        'losttime' : losttime_receive,
+        'phone': phone_receive,
+        'petname': petname_receive,
+        'lostdate': lostdate_receive,
         'lostplace': lostplace_receive,
-        'comment' : comment_receive
+        'comment': comment_receive
     }
     db.find_my_pet.insert_one(doc)
     return jsonify({'msg': '정보 등록 완료!'})
 
 
-# @app.route("/api/re_petinfo", methods=['POST'])
-# def delete_word():
-#     # 단어 삭제하기
-#     #     단어를 삭제하기 위해서는 단어만 있으면 되니까 뜻은 받을 필요 없음
-#     word_receive = request.form["word_give"]
-#     db.words.delete_one({'word': word_receive})
-#     return jsonify({'result': 'success', 'msg': f'단어 {word_receive} 삭제'})
-
-
 @app.route("/petlist", methods=["GET"])
 def petinfo_get():
     all_list = list(db.find_my_pet.find({}, {'_id': False}))
-    return jsonify({'allinform':all_list})
+    return jsonify({'allinform': all_list})
+
+
+@app.route('/detail', methods=["GET"])
+def detail_show():
+    pet_list = list(db.find_my_pet.find({}, {'_id': False}))
+    return jsonify({'pets': pet_list})
+
 
 if __name__ == '__main__':
     app.run('0.0.0.0', port=5000, debug=True)
